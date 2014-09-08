@@ -1,7 +1,16 @@
 import AddCategoryClass from 'discourse/mixins/add-category-class';
 
 export default Discourse.View.extend(AddCategoryClass, Discourse.Scrolling, {
-  templateName: 'topic',
+  templateName: function() {
+    var templateName = 'topic';
+    if (this.get('controller.model.archetype') !== "regular"){
+      var archTmpl = this.get('controller.model.archetype') + "_topic";
+      if (this.templateForName(archTmpl, 'template')) {
+        templateName = archTmpl;
+      };
+    }
+    return templateName;
+  }.property('controller.model.archetype'),
   topicBinding: 'controller.model',
   userFiltersBinding: 'controller.userFilters',
   classNameBindings: ['controller.multiSelect:multi-select',

@@ -649,6 +649,7 @@ en:
       reply: "Reply"
       cancel: "Cancel"
       create_topic: "Create Topic"
+      create_selectable: "Create"
       create_pm: "Create Private Message"
       title: "Or press Ctrl+Enter"
 

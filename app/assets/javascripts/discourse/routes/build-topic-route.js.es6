@@ -12,13 +12,17 @@ export function filterQueryParams(params, defaultParams) {
   return findOpts;
 }
 
-export default function(filter, extras) {
+export default function(filter, archetype, extras) {
   extras = extras || {};
+  queryParams.archetype = archetype || '';
+  
   return Discourse.Route.extend({
     queryParams: queryParams,
 
     beforeModel: function() {
-      this.controllerFor('navigation/default').set('filterMode', filter);
+       this.controllerFor('navigation/default').set('filterMode', filter);
+       this.controllerFor('navigation/default').set('archetype', archetype);
+       Discourse.Category.setArchetype(archetype);
     },
 
     model: function(data, transaction) {
@@ -27,6 +31,7 @@ export default function(filter, extras) {
       Discourse.ScreenTrack.current().stop();
 
       var findOpts = filterQueryParams(transaction.queryParams);
+      findOpts.archetype = queryParams.archetype;
       return Discourse.TopicList.list(filter, findOpts);
     },
 

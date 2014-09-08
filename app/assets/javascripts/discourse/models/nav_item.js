@@ -34,7 +34,8 @@ Discourse.NavItem = Discourse.Model.extend({
 
   // href from this item
   filterMode: function() {
-    var name = this.get('name');
+    var name = this.get('name'),
+        arch = this.get('archetype') ? Discourse.Archetype.getSlug(this.get('archetype')) + "/": "";
 
     if( name.split('/')[0] === 'category' ) {
       return 'category/' + this.get('categorySlug');
@@ -77,6 +78,7 @@ Discourse.NavItem.reopenClass({
     var args = { name: name, hasIcon: name === "unread" || name === "starred" };
     if (opts.category) { args.category = opts.category; }
     if (opts.noSubcategories) { args.noSubcategories = true; }
+    if(opts.archetype) { args.archetype = opts.archetype; }
     return Discourse.NavItem.create(args);
   },
 

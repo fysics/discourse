@@ -12,7 +12,25 @@
         {{plugin-outlet "composer-open"}}
 
         <div class='reply-to'>
-          {{{model.actionTitle}}}:
+          {{#if canSelectArchetype}}
+            {{i18n composer.create_selectable}}
+              <a href="" {{action showArchetypes}}>{{currentArchetype.name}}
+                {{#if showArchetypes}}
+                  <span class="fa fa-chevron-up"></span>
+                {{else}}
+                  <span class="fa fa-chevron-down"></span>
+                {{/if}}
+              </a>
+              {{#if showArchetypes}}
+                <ul>
+                  {{#each archetypes}}
+                    <li {{action selectArchetype id}}>{{name}}</li>
+                  {{/each}}
+                </ul>
+              {{/if}}
+          {{else}}
+            {{{model.actionTitle}}}:
+          {{/if}}
           {{#if canEdit}}
             {{#if showEditReason}}
               <div class="edit-reason-input">

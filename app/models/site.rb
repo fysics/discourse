@@ -62,7 +62,7 @@ class Site
   end
 
   def archetypes
-    Archetype.list.reject { |t| t.id == Archetype.private_message }
+    Archetype.capable(:shown_publicly).map { |name| Archetype.get_archetype name }
   end
 
   def self.json_for(guardian)

@@ -7,19 +7,22 @@
   @module Discourse
 **/
 Discourse.DiscoveryCategoriesRoute = Discourse.Route.extend(Discourse.OpenComposer, {
-  renderTemplate: function() {
+  controllerName: 'discovery/catetories',
+  renderTemplate: function () {
     this.render('navigation/categories', { outlet: 'navigation-bar' });
     this.render('discovery/categories', { outlet: 'list-container' });
   },
 
-  beforeModel: function() {
-    this.controllerFor('navigation/categories').set('filterMode', 'categories');
+  beforeModel: function () {
+    Discourse.Category.setArchetype(this.get("archetype_filter"));
+    this.controllerFor('navigation/categories').setProperties({filterMode: 'categories', archetype: this.get("archetype_filter")});
   },
 
   model: function() {
     // TODO: Remove this and ensure server side does not supply `topic_list`
     // if default page is categories
     PreloadStore.remove("topic_list");
+    var archetype_filter = this.get("archetype_filter")
 
     return Discourse.CategoryList.list('categories').then(function(list) {
       var tracking = Discourse.TopicTrackingState.current();
@@ -28,6 +31,11 @@ Discourse.DiscoveryCategoriesRoute = Discourse.Route.extend(Discourse.OpenCompos
         tracking.trackIncoming('categories');
       }
       return list;
+    }).then(function (model) {
+      model.categories.forEach(function (cat) {
+        cat.set("archetype", archetype_filter);
+      });
+      return model;
     });
   },
 

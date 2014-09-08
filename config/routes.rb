@@ -298,38 +298,58 @@ Discourse::Application.routes.draw do
   # We've renamed popular to latest. If people access it we want a permanent redirect.
   get "popular" => "list#popular_redirect"
 
-  resources :categories, :except => :show
-  get "category/:id/show" => "categories#show"
-  post "category/uploads" => "categories#upload"
-  post "category/:category_id/move" => "categories#move"
-  get "category/:category.rss" => "list#category_feed", format: :rss
-  get "category/:parent_category/:category.rss" => "list#category_feed", format: :rss
-  get "category/:category" => "list#category_latest"
-  get "category/:category/none" => "list#category_none_latest"
-  get "category/:parent_category/:category" => "list#parent_category_category_latest"
-  post "category/:category_id/notifications" => "categories#set_notifications"
+  def categorizer(archetype)
+    defaults = {}
+    if archetype != ""
+      defaults[:archetype] = archetype
+    end
+    resources :categories, :except => :show
+    get "category/:id/show" => "categories#show"
+    post "category/uploads" => "categories#upload"
+    post "category/:category_id/move" => "categories#move"
+    get "category/:category.rss" => "list#category_feed", format: :rss
+    get "category/:parent_category/:category.rss" => "list#category_feed", format: :rss
+    get "category/:category" => "list#category_latest"
+    get "category/:category/none" => "list#category_none_latest"
+    get "category/:parent_category/:category" => "list#parent_category_category_latest"
+    post "category/:category_id/notifications" => "categories#set_notifications"
 
-  get "top" => "list#top"
-  get "category/:category/l/top" => "list#category_top", as: "category_top"
-  get "category/:category/none/l/top" => "list#category_none_top", as: "category_none_top"
-  get "category/:parent_category/:category/l/top" => "list#parent_category_category_top", as: "parent_category_category_top"
+    get "top" => "list#top"
+    get "category/:category/l/top" => "list#category_top", as: "category_top#{archetype}"
+    get "category/:category/none/l/top" => "list#category_none_top", as: "category_none_top#{archetype}"
+    get "category/:parent_category/:category/l/top" => "list#parent_category_category_top", as: "parent_category_category_top#{archetype}"
 
-  TopTopic.periods.each do |period|
-    get "top/#{period}" => "list#top_#{period}"
-    get "category/:category/l/top/#{period}" => "list#category_top_#{period}", as: "category_top_#{period}"
-    get "category/:category/none/l/top/#{period}" => "list#category_none_top_#{period}", as: "category_none_top_#{period}"
-    get "category/:parent_category/:category/l/top/#{period}" => "list#parent_category_category_top_#{period}", as: "parent_category_category_top_#{period}"
+    TopTopic.periods.each do |period|
+      get "top/#{period}" => "list#top_#{period}"
+      get "category/:category/l/top/#{period}" => "list#category_top_#{period}", as: "category_top_#{period}#{archetype}"
+      get "category/:category/none/l/top/#{period}" => "list#category_none_top_#{period}", as: "category_none_top_#{period}#{archetype}"
+      get "category/:parent_category/:category/l/top/#{period}" => "list#parent_category_category_top_#{period}", as: "parent_category_category_top_#{period}#{archetype}"
+    end
+
+    Discourse.anonymous_filters.each do |filter|
+      get "#{filter}.rss" => "list##{filter}_feed", format: :rss, defaults: defaults
+    end
+
+    Discourse.filters.each do |filter|
+      get "#{filter}" => "list##{filter}", defaults: defaults
+      get "category/:category/l/#{filter}" => "list#category_#{filter}", as: "category_#{filter}#{archetype}", defaults: defaults
+      get "category/:category/none/l/#{filter}" => "list#category_none_#{filter}", as: "category_none_#{filter}#{archetype}", defaults: defaults
+      get "category/:parent_category/:category/l/#{filter}" => "list#parent_category_category_#{filter}", as: "parent_category_category_#{filter}#{archetype}", defaults: defaults
+    end
   end
 
-  Discourse.anonymous_filters.each do |filter|
-    get "#{filter}.rss" => "list##{filter}_feed", format: :rss
-  end
+  categorizer ""
 
-  Discourse.filters.each do |filter|
-    get "#{filter}" => "list##{filter}"
-    get "category/:category/l/#{filter}" => "list#category_#{filter}", as: "category_#{filter}"
-    get "category/:category/none/l/#{filter}" => "list#category_none_#{filter}", as: "category_none_#{filter}"
-    get "category/:parent_category/:category/l/#{filter}" => "list#parent_category_category_#{filter}", as: "parent_category_category_#{filter}"
+  Archetype.capable(:shown_publicly).each do |id|
+    name = begin
+            SiteSetting.send("archetypes_#{id}_slug") || id
+          rescue NoMethodError
+            id
+          end
+    scope "/#{name}" do
+      categorizer(id)
+      get "" => "list#latest", defaults: { archetype: id }
+    end
   end
 
   get "search" => "search#query"

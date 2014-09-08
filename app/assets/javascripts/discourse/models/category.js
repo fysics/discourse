@@ -26,8 +26,8 @@ Discourse.Category = Discourse.Model.extend({
   }.property('id'),
 
   url: function() {
-    return Discourse.getURL("/category/") + Discourse.Category.slugFor(this);
-  }.property('name'),
+    return Discourse.getURL(this.get("prefix") + "/category/") + Discourse.Category.slugFor(this);
+  }.property('name', 'archetype'),
 
   nameLower: function() {
     return this.get('name').toLowerCase();
@@ -36,6 +36,15 @@ Discourse.Category = Discourse.Model.extend({
   unreadUrl: function() {
     return this.get('url') + '/l/unread';
   }.property('url'),
+
+  prefix: function() {
+      return this.get("archetypeSlug") ? "/" + this.get("archetypeSlug") : "";
+  }.property("archetypeSlug"),
+  
+  archetypeSlug: function() {
+    var archetype = this.get("archetype");
+    return archetype ? Discourse.Archetype.getSlug(archetype) : "";
+  }.property("archetype"),
 
   newUrl: function() {
     return this.get('url') + '/l/new';
@@ -237,6 +246,12 @@ Discourse.Category.reopenClass({
 
   findById: function(id) {
     return Discourse.Category.idMap()[id];
+  },
+
+  setArchetype: function(archetype) {
+    Discourse.Category.list().forEach(function(cat) {
+      cat.set("archetype", archetype);
+    });
   },
 
   findByIds: function(ids){

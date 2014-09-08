@@ -7,6 +7,10 @@ export default NavigationDefaultController.extend({
 
   navItems: function() {
     if (this.get('showingSubcategoryList')) { return []; }
-    return Discourse.NavItem.buildList(this.get('category'), { noSubcategories: this.get('noSubcategories') });
-  }.property('category', 'noSubcategories')
+    var args = { noSubcategories: this.get('noSubcategories') };
+    if (this.get("archetype")){
+      args.archetype = this.get("archetype");
+    }
+    return Discourse.NavItem.buildList(this.get('category'), args);
+  }.property('category','noSubcategories','archetype')
 });
