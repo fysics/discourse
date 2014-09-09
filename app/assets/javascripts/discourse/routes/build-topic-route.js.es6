@@ -25,13 +25,17 @@ export default function(filter, archetype, extras) {
        Discourse.Category.setArchetype(archetype);
     },
 
-    model: function(data, transaction) {
+    model: function(data, transition) {
 
       // attempt to stop early cause we need this to be called before .sync
       Discourse.ScreenTrack.current().stop();
 
-      var findOpts = filterQueryParams(transaction.queryParams);
-      findOpts.archetype = queryParams.archetype;
+      var findOpts = filterQueryParams(transition.queryParams);
+
+      findOpts["cache"] = this.get("router.location.poppedState");
+
+      findOpts["archetype"] = queryParams.archetype;
+
       return Discourse.TopicList.list(filter, findOpts);
     },
 
