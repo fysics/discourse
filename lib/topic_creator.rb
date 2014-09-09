@@ -10,6 +10,7 @@ class TopicCreator
     @user = user
     @guardian = guardian
     @opts = opts
+    @added_users = []
   end
 
   def create
@@ -18,12 +19,34 @@ class TopicCreator
     setup_auto_close_time
     handle_archetype
     save_topic
+    create_warning
     watch_topic
 
     @topic
   end
 
   private
+
+  def create_warning
+    return unless @opts[:is_warning]
+
+    # We can only attach warnings to PMs
+    unless @topic.private_message?
+      @topic.errors.add(:base, :warning_requires_pm)
+      @errors = @topic.errors
+      raise ActiveRecord::Rollback.new
+    end
+
+    # Don't create it if there is more than one user
+    if @added_users.size != 1
+      @topic.errors.add(:base, :too_many_users)
+      @errors = @topic.errors
+      raise ActiveRecord::Rollback.new
+    end
+
+    # Create a warning record
+    Warning.create(topic: @topic, user: @added_users.first, created_by: @user)
+  end
 
   def watch_topic
     unless @opts[:auto_track] == false
@@ -58,6 +81,9 @@ class TopicCreator
     [:subtype, :archetype, :meta_data, :import_mode].each do |key|
       topic_params[key] = @opts[key] if @opts[key].present?
     end
+
+    # Automatically give it a moderator warning subtype if specified
+    topic_params[:subtype] = TopicSubtype.moderator_warning if @opts[:is_warning]
 
     category = find_category
 

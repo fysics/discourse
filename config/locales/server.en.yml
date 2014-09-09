@@ -120,14 +120,15 @@ en:
     errors:
       can_not_modify_automatic: "You can not modify an automatic group"
     default_names:
+      everyone: "everyone"
       admins: "admins"
       moderators: "moderators"
       staff: "staff"
+      trust_level_0: "trust_level_0"
       trust_level_1: "trust_level_1"
       trust_level_2: "trust_level_2"
       trust_level_3: "trust_level_3"
       trust_level_4: "trust_level_4"
-      trust_level_5: "trust_level_5"
 
   education:
     until_posts:
@@ -201,6 +202,8 @@ en:
         name: "Category Name"
       post:
         raw: "Body"
+      user_profile:
+        bio_raw: "About Me"
       user:
         ip_address: ""
     errors:
@@ -210,6 +213,9 @@ en:
       models:
         topic:
           attributes:
+            base:
+              warning_requires_pm: "You can only attach warnings to private messages."
+              too_many_users: "You can only send warnings to one user at a time."
             archetype:
               cant_send_pm: "Sorry, you cannot send a private message to that user."
         user:

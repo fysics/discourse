@@ -336,6 +336,7 @@ en:
         flagged_posts: "flagged posts"
         deleted_posts: "deleted posts"
         suspensions: "suspensions"
+        warnings_received: "warnings received"
 
       messages:
         all: "All"
@@ -624,6 +625,7 @@ en:
         message: "Authenticating with GitHub (make sure pop up blockers are not enabled)"
 
     composer:
+      add_warning: "This is an official warning."
       posting_not_on_topic: "Which topic do you want to reply to?"
       saving_draft_tip: "saving"
       saved_draft_tip: "saved"
@@ -783,8 +785,7 @@ en:
         educate:
           new: '<p>Your new topics appear here.</p><p>By default, topics are considered new and will show a <span class="badge new-topic badge-notification" style="vertical-align:middle;line-height:inherit;">new</span> indicator if they were created in the last 2 days.</p><p>You can change this in your <a href="%{userPrefsUrl}">preferences</a>.</p>'
           unread: '<p>Your unread topics appear here.</p><p>By default, topics are considered unread and will show unread counts <span class="badge new-posts badge-notification">1</span> if you:</p><ul><li>Created the topic</li><li>Replied to the topic</li><li>Read the topic for more than 4 minutes</li></ul><p>Or if you have explicitly set the topic to Tracked or Watched via the notification control at the bottom of each topic.</p><p>You can change this in your <a href="%{userPrefsUrl}">preferences</a>.</p>'
-          starred: '<p>Your starred topics appear here.</p>
-          <p>To star or unstar a topic, click or tap</p><ul><li>The <i class="fa fa-star"></i> next to the topic title</li><li>The Star button at the bottom of each topic</li>'
+          starred: '<p>Your starred topics appear here.</p><p>To star or unstar a topic, use:</p><ul><li>the <i class="fa fa-star"></i> next to any topic title</li><li>the Star button at the bottom of each topic</li></ul>'
       bottom:
         latest: "There are no more latest topics."
         hot: "There are no more hot topics."
@@ -1266,6 +1267,7 @@ en:
       allow_badges_label: "Allow badges to be awarded in this category"
       edit_permissions: "Edit Permissions"
       add_permission: "Add Permission"
+      everyone_permission: "everyone"
       this_year: "this year"
       position: "position"
       default_position: "Default Position"
@@ -1319,6 +1321,8 @@ en:
         other: "%{count} clicks"
 
     topic_statuses:
+      warning:
+        help: "This is an official warning."
       locked:
         help: "This topic is closed; it no longer accepts new replies"
       archived:
@@ -1530,6 +1534,7 @@ en:
         topic_flagged: "This <strong>topic</strong> has been flagged."
         visit_topic: "Visit the topic to take action"
         was_edited: "Post was edited after the first flag"
+        previous_flags_count: "This post has already been flagged {{count}} times."
 
         summary:
           action_type_3:
@@ -1899,6 +1904,7 @@ en:
         topics_entered: Topics Viewed
         flags_given_count: Flags Given
         flags_received_count: Flags Received
+        warnings_received_count: Warnings Received
         flags_given_received_count: 'Flags Given / Received'
         approve: 'Approve'
         approved_by: "approved by"

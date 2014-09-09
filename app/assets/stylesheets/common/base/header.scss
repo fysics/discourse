@@ -131,7 +131,6 @@
     .flagged-posts {
       background: $danger;
     }
-
 }
 
 .d-dropdown {
@@ -206,6 +205,14 @@
       p {
         margin: 0;
         overflow: hidden;
+      }
+    }
+    .is-warning {
+      i.fa-envelope-o {
+        &:before {
+          content: "\f0e0";
+        }
+        color: $danger;
       }
     }
     .read {
