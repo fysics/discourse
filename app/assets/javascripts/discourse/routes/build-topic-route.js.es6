@@ -30,13 +30,12 @@ export default function(filter, archetype, extras) {
       // attempt to stop early cause we need this to be called before .sync
       Discourse.ScreenTrack.current().stop();
 
-      var findOpts = filterQueryParams(transition.queryParams);
-
-      findOpts["cache"] = this.get("router.location.poppedState");
+      var findOpts = filterQueryParams(transition.queryParams),
+          extras = { cached: this.isPoppedState(transition) };
 
       findOpts["archetype"] = queryParams.archetype;
 
-      return Discourse.TopicList.list(filter, findOpts);
+      return Discourse.TopicList.list(filter, findOpts, extras);
     },
 
     setupController: function(controller, model, trans) {
