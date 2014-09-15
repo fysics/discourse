@@ -144,7 +144,7 @@ class TopicTrackingState
     LEFT JOIN topic_users tu ON tu.topic_id = topics.id AND tu.user_id = u.id
     LEFT JOIN categories c ON c.id = topics.category_id
     WHERE u.id IN (:user_ids) AND
-          topics.archetype <> 'private_message' AND
+          topics.archetype IN (:public_archetypes) AND
           ((#{unread}) OR (#{new})) AND
           (topics.visible OR u.admin OR u.moderator) AND
           topics.deleted_at IS NULL AND
@@ -168,7 +168,8 @@ SQL
     sql << " ORDER BY topics.bumped_at DESC ) SELECT * FROM x LIMIT 500"
 
     SqlBuilder.new(sql)
-      .map_exec(TopicTrackingState, user_ids: user_ids, topic_id: topic_id)
+      .map_exec(TopicTrackingState, user_ids: user_ids, topic_id: topic_id,
+                public_archetypes: Archetype.capable(:shown_publicly))
 
   end
 

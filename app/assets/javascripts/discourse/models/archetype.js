@@ -19,4 +19,15 @@ Discourse.Archetype = Discourse.Model.extend({
 
 });
 
+Discourse.Archetype.reopenClass({
+   getSlug: function(id){
+     return Discourse.Site.currentProp("archetypes").findBy("id", id).slug;
+   },
+   getForCapability: function(cap) {
+     return Discourse.Site.currentProp("archetypes").filter(function(arch){
+       return arch.capabilities && arch.capabilities.indexOf(cap) != -1;
+     });
+   }
+});
+
 

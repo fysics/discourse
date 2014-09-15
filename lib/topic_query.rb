@@ -20,6 +20,7 @@ class TopicQuery
                      category
                      order
                      ascending
+                     archetype
                      no_subcategories
                      no_definitions
                      status
@@ -235,14 +236,22 @@ class TopicQuery
                        .references('tu')
       end
 
-      category_id = get_category_id(options[:category])
-      if category_id
-        if options[:no_subcategories]
-          result = result.where('categories.id = ?', category_id)
-        else
-          result = result.where('categories.id = ? or (categories.parent_category_id = ? AND categories.topic_id <> topics.id)', category_id, category_id)
+      category_id = nil
+      if options[:category].present?
+        category_id = options[:category].to_i
+        category_id = Category.where(slug: options[:category]).pluck(:id).first if category_id == 0
+        if category_id
+          if options[:no_subcategories]
+            result = result.where('categories.id = ?', category_id)
+          else
+            result = result.where('categories.id = ? or categories.parent_category_id = ?', category_id, category_id)
+          end
+          result = result.references(:categories)
         end
-        result = result.references(:categories)
+      end
+
+      if options[:archetype].present?
+        result = result.where('topics.archetype = ?', options[:archetype])
       end
 
       result = apply_ordering(result, options)

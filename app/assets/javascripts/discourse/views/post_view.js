@@ -2,7 +2,16 @@ var DAY = 60 * 50 * 1000;
 
 Discourse.PostView = Discourse.GroupedView.extend(Ember.Evented, {
   classNames: ['topic-post', 'clearfix'],
-  templateName: 'post',
+  templateName: function () {
+    var templateName = 'post';
+    if (this.get("post.topic.archetype") !== "regular") {
+      var archTmpl = this.get("post.topic.archetype") + "_post";
+      if (this.templateForName(archTmpl, 'template')) {
+        templateName = archTmpl;
+      };
+    }
+    return templateName;
+  }.property("post.topic.archetype"),
   classNameBindings: ['postTypeClass',
                       'selected',
                       'post.hidden:post-hidden',

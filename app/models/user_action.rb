@@ -298,7 +298,7 @@ SQL
     end
 
     if !guardian.can_see_private_messages?(user_id) || ignore_private_messages
-      builder.where("t.archetype != :archetype", archetype: Archetype::private_message)
+      builder.where("t.archetype IN (:archetypes)", archetypes: Archetype::capable(:shown_publicly))
     end
 
     unless guardian.is_admin?

@@ -52,13 +52,13 @@ class TopTopic < ActiveRecord::Base
                   FROM topics
                   WHERE deleted_at IS NOT NULL
                      OR NOT visible
-                     OR archetype = :private_message
+                     OR archetype IN (:non_public_types)
                      OR archived
                      OR id IN (SELECT id FROM category_definition_topic_ids)
                 )
                 DELETE FROM top_topics
                 WHERE topic_id IN (SELECT id FROM invisible_topic_ids)",
-             private_message: Archetype::private_message)
+                  non_public_types: Archetype::not_capable(:shown_publicly))
   end
 
   def self.add_new_visible_topics
@@ -70,14 +70,14 @@ class TopTopic < ActiveRecord::Base
                 LEFT JOIN top_topics tt ON t.id = tt.topic_id
                 WHERE t.deleted_at IS NULL
                   AND t.visible
-                  AND t.archetype <> :private_message
+                  AND t.archetype IN (:public_types)
                   AND NOT t.archived
                   AND t.id NOT IN (SELECT id FROM category_definition_topic_ids)
                   AND tt.topic_id IS NULL
               )
               INSERT INTO top_topics (topic_id)
               SELECT id FROM visible_topics",
-             private_message: Archetype::private_message)
+                public_types: Archetype.capable(:shown_publicly))
   end
 
   def self.update_posts_count_for(period)

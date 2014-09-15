@@ -8,6 +8,7 @@ export default DiscourseController.extend({
 
   showEditReason: false,
   editReason: null,
+  showArchetypes: false,
   maxTitleLength: Discourse.computed.setting('max_topic_title_length'),
   scopedCategoryId: null,
 
@@ -31,6 +32,15 @@ export default DiscourseController.extend({
     // Toggle the reply view
     toggle: function() {
       this.toggle();
+    },
+    
+    selectArchetype: function(archetypeId) {
+      this.set("model.archetypeId", archetypeId);
+      this.set("showArchetypes", false);
+    },
+    
+    showArchetypes: function() {
+      this.set("showArchetypes", true);
     },
 
     togglePreview: function() {
@@ -87,6 +97,17 @@ export default DiscourseController.extend({
     return Discourse.Category.list();
   }.property(),
 
+  currentArchetype: function() {
+    return Discourse.Site.currentProp("archetypes").findBy("id", this.get("model.archetypeId"));
+  }.property("model.archetypeId"),
+
+  archetypes: function() {
+    return Discourse.Archetype.getForCapability("creatible");
+  }.property(),
+
+  canSelectArchetype: function() {
+    return this.get("model.action") === "createTopic" && this.get("archetypes").length > 1 && Discourse.User.current().get("admin");
+  }.property("model.action", "archetypes"),
 
   toggle: function() {
     this.closeAutocomplete();
